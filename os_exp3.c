@@ -2,10 +2,10 @@
 #include <stdlib.h>
 
 typedef struct Page {
-	int flag; //Ò³¿ò±ê¼Ç 
-	int read;    //RÎ»£¬´ú±íÊÇ·ñ¶Á¹ı 
-	int modify;    //MÎ»£¬´ú±íÊÇ·ñĞ´¹ı 
-	struct Page* next;  //ÏÂÒ»½Úµã 
+	int flag; //é¡µæ¡†æ ‡è®° 
+	int access;    //Rä½ï¼Œä»£è¡¨æ˜¯å¦è®¿é—®è¿‡ 
+	int modify;    //Mä½ï¼Œä»£è¡¨æ˜¯å¦ä¿®æ”¹è¿‡ 
+	struct Page* next;  //ä¸‹ä¸€èŠ‚ç‚¹ 
 	
 }Page;
 
@@ -22,65 +22,66 @@ void traversal_list_from(Page* head) {
 	
 	Page* p = head;
 	
-	printf("µ±Ç°×ÜÒ³¿òÇé¿ö(-1Ò³ºÅËµÃ÷¸ÃÒ³ÉĞÎ´±»Ê¹ÓÃ):\n");
-	printf("Ò³ºÅ    R    M\n");
+	printf("å½“å‰æ€»é¡µæ¡†æƒ…å†µ(-1é¡µå·è¯´æ˜è¯¥é¡µå°šæœªè¢«ä½¿ç”¨):\n");
+	printf("é¡µå·    A    M\n");
 	
 	do {
-		printf("%d      %d    %d\n",p->flag,p->read,p->modify);
+		printf("%d      %d    %d\n",p->flag,p->access,p->modify);
 		p = p->next;
 	} while(p!=head); 
 }
 
-void clock_displace_algorithm(Page* head, int flag, int read, int modify) {
+/*æ—¶é’Ÿé¡µé¢ç½®æ¢ç®—æ³•ï¼ŒæŠŠè¢«æ·˜æ±°çš„é¡µé¢çš„ä¸‹ä¸€ä¸ªç»“ç‚¹æŒ‡é’ˆè¿”å›*/ 
+Page* clock_displace_algorithm(Page* head, int flag) {
 	
 	Page* p = head;
 	
 	/*
-	µÚÒ»ÂÖ²éÕÒ£¬²éÕÒÄ¿±êÎªR=0£¬M=0µÄ½áµã£¬²¢ÖÃ»» 
+	ç¬¬ä¸€è½®æŸ¥æ‰¾ï¼ŒæŸ¥æ‰¾ç›®æ ‡ä¸ºR=0ï¼ŒM=0çš„ç»“ç‚¹ï¼Œå¹¶ç½®æ¢ 
 	*/ 
 	do {
 		
-		if(p->read == 0 && p->modify == 0) {
+		if(p->access == 0 && p->modify == 0) {
 			
-			printf("½«Ò³ºÅÎª%dµÄÒ³ÃæÌÔÌ­\n",p->flag);
+			printf("å°†é¡µå·ä¸º%dçš„é¡µé¢æ·˜æ±°\n",p->flag);
 		    p->flag = flag;
-		    p->read = read;
-		    p->modify = modify;
-		    return;
+		    p->access = 1;
+		    p->modify = 0;
+		    return p->next;
 		}
 		
 		p = p->next;
 	}while(p!=head);
 	
 	/*
-	µÚ¶şÂÖ²éÕÒ£¬²éÕÒÄ¿±êÎªR=0£¬M=1µÄ½áµã£¬²¢ÖÃ»»,²¢½«ËùÓĞÉ¨Ãè¹ıµÄÒ³ºÅµÄRÖÃÎª0¡¢
+	ç¬¬äºŒè½®æŸ¥æ‰¾ï¼ŒæŸ¥æ‰¾ç›®æ ‡ä¸ºR=0ï¼ŒM=1çš„ç»“ç‚¹ï¼Œå¹¶ç½®æ¢,å¹¶å°†æ‰€æœ‰æ‰«æè¿‡çš„é¡µå·çš„Rç½®ä¸º0ã€
 	*/
     do {
 		
-		if(p->read == 0 && p->modify == 1) {
+		if(p->access == 0 && p->modify == 1) {
 			
-			printf("½«Ò³ºÅÎª%dµÄÒ³ÃæÌÔÌ­\n",p->flag);
+			printf("å°†é¡µå·ä¸º%dçš„é¡µé¢æ·˜æ±°\n",p->flag);
 		    p->flag = flag;
-		    p->read = read;
-		    p->modify = modify;
-		    return;
+		    p->access = 1;
+		    p->modify = 0;
+		    return p->next;
 		}
-		p->read = 0;
+		p->access = 0;
 		p = p->next;
 		
 	}while(p!=head); 
 	 
 	/*
-	ÈôÁ½ÂÖ²éÕÒÖ®ºóÈÔÎ´ÕÒµ½£¬ÔòÔÙÖ´ĞĞÒ»±é£¬´ËÊ±±ØÄÜÕÒµ½½á¹û£¬²»»á³öÏÖµİ¹é 
+	è‹¥ä¸¤è½®æŸ¥æ‰¾ä¹‹åä»æœªæ‰¾åˆ°ï¼Œåˆ™å†æ‰§è¡Œä¸€éï¼Œæ­¤æ—¶å¿…èƒ½æ‰¾åˆ°ç»“æœï¼Œä¸ä¼šå‡ºç°é€’å½’ 
 	*/ 
-	clock_displace_algorithm(head,flag,read,modify);
+	clock_displace_algorithm(head,flag);
 }
 
-int direct_alloc(Page* head, int flag, int read, int modify) {
+int direct_alloc(Page* head, int flag) {
 	
 	Page* p = head;
 	do {
-		if(p->flag == -1) { p->flag = flag; p->read = read; p->modify = modify; return 1;}
+		if(p->flag == -1) { p->flag = flag; p->access = 1; p->modify = 0; return 1;}
 		p = p->next;
 	}while(p!=head);
 	
@@ -95,16 +96,16 @@ Page* construct_loop_list() {
 	Page* head = (Page*)malloc(sizeof(Page));
 	head->next = head;
 	head->flag = -1;
-	head->read = 0;
+	head->access = 0;
 	head->modify = 0; 
 	
-	printf("ÊäÈë×÷Òµ¿ÉÕ¼ÓÃµÄ×ÜÒ³¿òÊı:");
+	printf("è¾“å…¥ä½œä¸šå¯å ç”¨çš„æ€»é¡µæ¡†æ•°:");
 	scanf("%d",&number);
 	
 	for(i=0;i<number-1;i++) {
 		
 		Page* node = (Page*)malloc(sizeof(Page));
-		node->read = 0;
+		node->access = 0;
 		node->flag = -1;
 		node->modify = 0;
 		
@@ -114,34 +115,82 @@ Page* construct_loop_list() {
 	return head;
 }
 
-void input_req_sequence(Page* head) {
+/*è¾“å…¥è¯·æ±‚åºåˆ—ï¼Œå…ˆåˆ¤æ–­èƒ½å¦ç›´æ¥è£…å…¥ï¼Œå†è¿›è¡Œæ·˜æ±°*/
+Page* input_req_sequence(Page* head) {
 	
-	int flag, read, modify;
-	
+	int flag;
 	while(1) {
 	
-	    printf("ÇëÊäÈëÒ»¸ö¶ÔÒ³ºÅ·ÃÎÊÇëÇóµÄĞòÁĞ£¬¸ñÊ½Îª(ÇëÇóµÄÒ³ºÅ ÊÇ·ñ¶Á ÊÇ·ñĞ´)ÆäÖĞÊÇÎª1·ñÎª0 ³öÏÖ¸ºÊıÊÓÎªÍË³ö:");
-	    scanf("%d %d %d",&flag,&read,&modify);
+	    printf("è¯·è¾“å…¥ä¸€ä¸ªå¯¹é¡µå·è®¿é—®è¯·æ±‚çš„åºåˆ—ï¼Œè¯·é€ä¸ªè¾“å…¥(å‡ºç°è´Ÿæ•°è§†ä¸ºé€€å‡º):");
+	    scanf("%d",&flag);
 	    
-	    if(flag < 0 || read < 0 || modify < 0) break;
+	    if(flag < 0) break;
 	
-	    if(direct_alloc(head,flag,read,modify)) continue;
-	
-	    clock_displace_algorithm(head,flag,read,modify);
+	    if(direct_alloc(head,flag)) continue;
+		
+		if (access_page(head,flag)) {}
+	    else { head = clock_displace_algorithm(head,flag); }
 	
 	    traversal_list_from(head);
     }
+    
+    return head;
+}
+
+/*è®¿é—®é¡µé¢*/ 
+int access_page(Page* head, int flag) {
+	
+	Page* p = head;
+	
+	do {
+		if(p->flag == flag) { p->access = 1; printf("è®¿é—®æˆåŠŸ!\n"); return 1;}
+		p = p->next;
+	}while(p!=head);
+	
+	printf("é¡µå·æœªæ‰¾åˆ°ï¼\n");
+	return 0;
+}
+
+/*ä¿®æ”¹é¡µé¢*/ 
+void modify_page(Page* head) {
+	
+	Page* p = head;
+	int flag;
+	
+	printf("è¯·è¾“å…¥è¦ä¿®æ”¹çš„é¡µå·:");
+	scanf("%d",&flag);
+	
+	do {
+		if(p->flag == flag) { p->modify = 1; printf("ä¿®æ”¹æˆåŠŸ!\n"); return;}
+		p = p->next;
+	}while(p!=head);
+	
+	printf("é¡µå·æœªæ‰¾åˆ°ï¼\n");
+	
+}
+
+/*æ—¶é’Ÿä¸­æ–­*/
+void clock_suspend(Page* head) {
+	
+	Page* p = head;
+	
+	do {
+		p->access = 0;
+		p = p->next;
+	}while(p!=head);
 }
 
 void user_select(Page* head) {
 	
 	int sel;
 	while(1) {
-		printf("ÊäÈëÑ¡ÏîÒÔÑ¡Ôñ:(1)ÊäÈëÒ»¸öÇëÇóĞòÁĞ(2)´òÓ¡µ±Ç°Ò³ºÅĞòÁĞ(ÆäËû)ÍË³ö:");
+		printf("è¾“å…¥é€‰é¡¹ä»¥é€‰æ‹©:(1)è¾“å…¥ä¸€ä¸ªè®¿é—®è¯·æ±‚åºåˆ—(2)æ‰“å°å½“å‰é¡µå·åºåˆ—(3)ä¿®æ”¹æŒ‡å®šé¡µé¢(4)æ—¶é’Ÿä¸­æ–­å‘ç”Ÿ(å…¶ä»–)é€€å‡º:");
 	    scanf("%d",&sel);
 	    
-	    if (sel == 1) input_req_sequence(head);
+	    if (sel == 1) head = input_req_sequence(head);
 	    else if (sel == 2) traversal_list_from(head);
+	    else if (sel == 3) modify_page(head);
+	    else if (sel == 4) clock_suspend(head);
 	    else break;
 	}
 }
