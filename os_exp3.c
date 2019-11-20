@@ -115,10 +115,28 @@ Page* construct_loop_list() {
 	return head;
 }
 
+/*访问页面*/ 
+Page* access_page(Page* head, int flag) {
+	
+	Page* p = head;
+	Page* null = NULL;
+	
+	do {
+		if(p->flag == flag) { p->access = 1; printf("访问成功!\n"); head = p->next; return head;}
+		p = p->next;
+	}while(p!=head);
+	
+	printf("页号未找到！\n");
+	
+	return null;
+}
+
 /*输入请求序列，先判断能否直接装入，再进行淘汰*/
 Page* input_req_sequence(Page* head) {
 	
 	int flag;
+	Page* p;
+	
 	while(1) {
 	
 	    printf("请输入一个对页号访问请求的序列，请逐个输入(出现负数视为退出):");
@@ -126,29 +144,17 @@ Page* input_req_sequence(Page* head) {
 	    
 	    if(flag < 0) break;
 	
-	    if(direct_alloc(head,flag)) continue;
+	    if(direct_alloc(head,flag)) { head = head->next; continue; }
 		
-		if (access_page(head,flag)) {}
+		p = access_page(head,flag);
+		
+		if (p != NULL) { head = p;}
 	    else { head = clock_displace_algorithm(head,flag); }
 	
 	    traversal_list_from(head);
     }
     
     return head;
-}
-
-/*访问页面*/ 
-int access_page(Page* head, int flag) {
-	
-	Page* p = head;
-	
-	do {
-		if(p->flag == flag) { p->access = 1; printf("访问成功!\n"); return 1;}
-		p = p->next;
-	}while(p!=head);
-	
-	printf("页号未找到！\n");
-	return 0;
 }
 
 /*修改页面*/ 
