@@ -32,7 +32,7 @@ void traversal_list_from(Page* head) {
 }
 
 /*时钟页面置换算法，把被淘汰的页面的下一个结点指针返回*/ 
-Page* clock_displace_algorithm(Page* head, int flag) {
+Page* clock_displace_algorithm(Page* head, int flag, int modify) {
 	
 	Page* p = head;
 	
@@ -46,7 +46,7 @@ Page* clock_displace_algorithm(Page* head, int flag) {
 			printf("将页号为%d的页面淘汰\n",p->flag);
 		    p->flag = flag;
 		    p->access = 1;
-		    p->modify = 0;
+		    p->modify = modify;
 		    return p->next;
 		}
 		
@@ -63,7 +63,7 @@ Page* clock_displace_algorithm(Page* head, int flag) {
 			printf("将页号为%d的页面淘汰\n",p->flag);
 		    p->flag = flag;
 		    p->access = 1;
-		    p->modify = 0;
+		    p->modify =modify;
 		    return p->next;
 		}
 		p->access = 0;
@@ -74,7 +74,7 @@ Page* clock_displace_algorithm(Page* head, int flag) {
 	/*
 	若两轮查找之后仍未找到，则再执行一遍，此时必能找到结果，不会出现递归 
 	*/ 
-	clock_displace_algorithm(head,flag);
+	clock_displace_algorithm(head,flag,modify);
 }
 
 int direct_alloc(Page* head, int flag) {
@@ -149,7 +149,7 @@ Page* input_req_sequence(Page* head) {
 		p = access_page(head,flag);
 		
 		if (p != NULL) { head = p;}
-	    else { head = clock_displace_algorithm(head,flag); }
+	    else { head = clock_displace_algorithm(head,flag,0); }
 	
 	    traversal_list_from(head);
     }
@@ -158,7 +158,7 @@ Page* input_req_sequence(Page* head) {
 }
 
 /*修改页面*/ 
-void modify_page(Page* head) {
+Page* modify_page(Page* head) {
 	
 	Page* p = head;
 	int flag;
@@ -167,12 +167,16 @@ void modify_page(Page* head) {
 	scanf("%d",&flag);
 	
 	do {
-		if(p->flag == flag) { p->modify = 1; p->access = 1; printf("修改成功!\n"); return;}
+		if(p->flag == flag) { p->access = 1; p->modify = 1; printf("修改成功!\n"); head = p->next; return head;}
 		p = p->next;
 	}while(p!=head);
+	printf("页号未找到!\n");
 	
-	printf("页号未找到！\n");
+	head = clock_displace_algorithm(head,flag,1);
 	
+	traversal_list_from(head);
+
+    return head;
 }
 
 /*时钟中断*/
