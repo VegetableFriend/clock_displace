@@ -199,7 +199,7 @@ void user_select(Page* head) {
 	    
 	    if (sel == 1) head = input_req_sequence(head);
 	    else if (sel == 2) traversal_list_from(head);
-	    else if (sel == 3) modify_page(head);
+	    else if (sel == 3) head = modify_page(head);
 	    else if (sel == 4) clock_suspend(head);
 	    else break;
 	}
