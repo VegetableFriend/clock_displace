@@ -161,7 +161,7 @@ void modify_page(Page* head) {
 	scanf("%d",&flag);
 	
 	do {
-		if(p->flag == flag) { p->modify = 1; printf("修改成功!\n"); return;}
+		if(p->flag == flag) { p->modify = 1; p->access = 1; printf("修改成功!\n"); return;}
 		p = p->next;
 	}while(p!=head);
 	
